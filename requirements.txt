@@ -1,4 +1,4 @@
-aiohttp
+aiohttp==3.7.0
 aiodns
 beautifulsoup4
 cchardet
@@ -11,3 +11,5 @@ schedule
 geopy
 fake-useragent
 googletransx
+pydantic
+psycopg2-binary>=2.9.1

@@ -28,6 +28,7 @@ class Config:
     Count: Optional[int] = None
     Stats: bool = False
     Database: object = None
+    DatabasePostgres: object = None
     To: str = None
     All = None
     Debug: bool = False

@@ -5,6 +5,7 @@ from . import datelock, feed, get, output, verbose, storage
 from .token import TokenExpiryException
 from . import token
 from .storage import db
+from .storage import postgres
 from .feed import NoMoreTweetsException
 
 import logging as logme
@@ -35,6 +36,7 @@ class Twint:
         self.token = token.Token(config)
         self.token.refresh()
         self.conn = db.Conn(config.Database)
+        self.conn_postgres = postgres.ConnPostgres(config.DatabasePostgres)
         self.d = datelock.Set(self.config.Until, self.config.Since)
         verbose.Elastic(config.Elasticsearch)
 
@@ -149,13 +151,19 @@ class Twint:
         await self.Feed()
         if self.config.User_full:
             logme.debug(__name__ + ':Twint:follow:userFull')
-            self.count += await get.Multi(self.feed, self.config, self.conn)
+            if self.conn_postgres:
+                self.count += await get.Multi(self.feed, self.config, self.conn_postgres)
+            else:
+                self.count += await get.Multi(self.feed, self.config, self.conn)
         else:
             logme.debug(__name__ + ':Twint:follow:notUserFull')
             for user in self.feed:
                 self.count += 1
                 username = user.find("a")["name"]
-                await output.Username(username, self.config, self.conn)
+                if self.conn_postgres:
+                    await output.Username(username, self.config, self.conn_postgres)
+                else:
+                    await output.Username(username, self.config, self.conn)
 
     async def favorite(self):
         logme.debug(__name__ + ':Twint:favorite')
@@ -211,19 +219,28 @@ class Twint:
         logme.debug(__name__ + ':Twint:profile')
         for tweet in self.feed:
             self.count += 1
-            await output.Tweets(tweet, self.config, self.conn)
+            if self.conn_postgres:
+                await output.Tweets(tweet, self.config, self.conn_postgres)
+            else:
+                await output.Tweets(tweet, self.config, self.conn)
 
     async def tweets(self):
         await self.Feed()
         # TODO : need to take care of this later
         if self.config.Location:
             logme.debug(__name__ + ':Twint:tweets:location')
-            self.count += await get.Multi(self.feed, self.config, self.conn)
+            if self.conn_postgres:
+                self.count += await get.Multi(self.feed, self.config, self.conn_postgres)
+            else:
+                self.count += await get.Multi(self.feed, self.config, self.conn)
         else:
             logme.debug(__name__ + ':Twint:tweets:notLocation')
             for tweet in self.feed:
                 self.count += 1
-                await output.Tweets(tweet, self.config, self.conn)
+                if self.conn_postgres:
+                    await output.Tweets(tweet, self.config, self.conn_postgres)
+                else:
+                    await output.Tweets(tweet, self.config, self.conn)
 
     async def main(self, callback=None):
 
@@ -248,7 +265,10 @@ class Twint:
         if self.config.Username is not None and self.config.User_id is None:
             logme.debug(__name__ + ':Twint:main:username')
 
-            self.config.User_id = await get.User(self.config.Username, self.config, self.conn, True)
+            if self.conn_postgres:
+                self.config.User_id = await get.User(self.config.Username, self.config, self.conn_postgres, True)
+            else:
+                self.config.User_id = await get.User(self.config.Username, self.config, self.conn, True)
             if self.config.User_id is None:
                 raise ValueError("Cannot find twitter account with name = " + self.config.Username)
 

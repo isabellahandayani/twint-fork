@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from twint.storage import postgres
+
 from . import format, get
 from .tweet import Tweet
 from .user import User
@@ -138,6 +140,9 @@ async def checkData(tweet, config, conn):
         if config.Database:
             logme.debug(__name__ + ':checkData:Database')
             db.tweets(conn, tweet, config)
+        if config.DatabasePostgres:
+            logme.debug(__name__ + ':checkData:DatabasePostgre')
+            postgres.tweets(conn, tweet, config)
         if config.Pandas:
             logme.debug(__name__ + ':checkData:Pandas')
             panda.update(tweet, config)
@@ -181,6 +186,10 @@ async def Users(u, config, conn):
         logme.debug(__name__ + ':User:Database')
         db.user(conn, config, user)
 
+    if config.DatabasePostgres:
+        logme.debug(__name__ + ':User:DatabasePostgres')
+        postgres.user(conn, config, user)
+
     if config.Elasticsearch:
         logme.debug(__name__ + ':User:Elasticsearch')
         _save_date = user.join_date
@@ -217,6 +226,10 @@ async def Username(username, config, conn):
     if config.Database:
         logme.debug(__name__ + ':Username:Database')
         db.follow(conn, config.Username, config.Followers, username)
+    
+    if config.DatabasePostgres:
+        logme.debug(__name__ + ':Username:DatabasePostgres')
+        postgres.follow(conn, config.Username, config.Followers, username)
 
     if config.Elasticsearch:
         logme.debug(__name__ + ':Username:Elasticsearch')
