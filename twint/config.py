@@ -29,6 +29,7 @@ class Config:
     Stats: bool = False
     Database: object = None
     DatabasePostgres: object = None
+    PostgresAdditionalId: int = -1
     To: str = None
     All = None
     Debug: bool = False

@@ -88,6 +88,7 @@ def init(db):
                     translate text default '',
                     trans_src text default '',
                     trans_dest text default '',
+                    additional_id int not null default -1,
                     CONSTRAINT tweets_pk PRIMARY KEY (id)
                 );
         """
@@ -277,9 +278,10 @@ def tweets(conn, Tweet, config):
                     time_ms,
                     Tweet.translate,
                     Tweet.trans_src,
-                    Tweet.trans_dest)
+                    Tweet.trans_dest,
+                    config.PostgresAdditionalId)
         print(entry)
-        cursor.execute('INSERT INTO tweets VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)', entry)
+        cursor.execute('INSERT INTO tweets VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)', entry)
 
         if config.Favorites:
             query = 'INSERT INTO favorites VALUES(?,?)'
