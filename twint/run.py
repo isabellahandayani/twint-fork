@@ -236,11 +236,16 @@ class Twint:
         else:
             logme.debug(__name__ + ':Twint:tweets:notLocation')
             for tweet in self.feed:
-                self.count += 1
-                if self.conn_postgres:
-                    await output.Tweets(tweet, self.config, self.conn_postgres)
-                else:
-                    await output.Tweets(tweet, self.config, self.conn)
+                temp = self.count
+                try:
+                    self.count += 1
+                    if self.conn_postgres:
+                        await output.Tweets(tweet, self.config, self.conn_postgres)
+                    else:
+                        await output.Tweets(tweet, self.config, self.conn)
+                except Exception:
+                    self.count = temp
+                    continue
 
     async def main(self, callback=None):
 
