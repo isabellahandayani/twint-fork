@@ -14,7 +14,7 @@ VERSION = None
 
 # Packages required
 REQUIRED = [
-    'aiohttp', 'aiodns', 'beautifulsoup4', 'cchardet',
+    'aiohttp>=3.7.0', 'aiodns>=3.0.0', 'beautifulsoup4>=4.10.0', 'cchardet',
     'elasticsearch', 'pysocks', 'pandas', 'aiohttp_socks',
     'schedule', 'geopy', 'fake-useragent', 'googletransx'
 ]
