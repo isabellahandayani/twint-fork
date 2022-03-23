@@ -10,5 +10,4 @@ c.DatabasePostgres = {
     "database":"twint"
 }
 c.PostgresAdditionalId = 2
-
 twint.run.Search(c)
