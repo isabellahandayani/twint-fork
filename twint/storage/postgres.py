@@ -24,33 +24,33 @@ def init(db):
         conn.autocommit = True
         cursor = conn.cursor()
 
-        table_users = """
-            CREATE TABLE IF NOT EXISTS
-                users(
-                    id bigint not null UNIQUE,
-                    id_str text not null,
-                    name text,
-                    username text not null,
-                    bio text,
-                    location text,
-                    url text,
-                    join_date text not null,
-                    join_time text not null,
-                    tweets bigint,
-                    following bigint,
-                    followers bigint,
-                    likes bigint,
-                    media bigint,
-                    private bigint not null,
-                    verified bigint not null,
-                    profile_image_url text not null,
-                    background_image text,
-                    hex_dig  text not null,
-                    time_update bigint not null,
-                    CONSTRAINT users_pk PRIMARY KEY (id, hex_dig)
-                );
-            """
-        cursor.execute(table_users)
+        # table_users = """
+        #     CREATE TABLE IF NOT EXISTS
+        #         users(
+        #             id bigint not null UNIQUE,
+        #             id_str text not null,
+        #             name text,
+        #             username text not null,
+        #             bio text,
+        #             location text,
+        #             url text,
+        #             join_date text not null,
+        #             join_time text not null,
+        #             tweets bigint,
+        #             following bigint,
+        #             followers bigint,
+        #             likes bigint,
+        #             media bigint,
+        #             private bigint not null,
+        #             verified bigint not null,
+        #             profile_image_url text not null,
+        #             background_image text,
+        #             hex_dig  text not null,
+        #             time_update bigint not null,
+        #             CONSTRAINT users_pk PRIMARY KEY (id, hex_dig)
+        #         );
+        #     """
+        # cursor.execute(table_users)
 
         table_tweets = """
             CREATE TABLE IF NOT EXISTS
@@ -94,90 +94,90 @@ def init(db):
         """
         cursor.execute(table_tweets)
 
-        table_retweets = """
-            CREATE TABLE IF NOT EXISTS
-                retweets(
-                    user_id bigint not null,
-                    username text not null,
-                    tweet_id bigint not null,
-                    retweet_id bigint not null,
-                    retweet_date bigint,
-                    CONSTRAINT retweets_pk PRIMARY KEY(user_id, tweet_id),
-                    CONSTRAINT user_id_fk FOREIGN KEY(user_id) REFERENCES users(id),
-                    CONSTRAINT tweet_id_fk FOREIGN KEY(tweet_id) REFERENCES tweets(id)
-                );
-        """
-        cursor.execute(table_retweets)
+        # table_retweets = """
+        #     CREATE TABLE IF NOT EXISTS
+        #         retweets(
+        #             user_id bigint not null,
+        #             username text not null,
+        #             tweet_id bigint not null,
+        #             retweet_id bigint not null,
+        #             retweet_date bigint,
+        #             CONSTRAINT retweets_pk PRIMARY KEY(user_id, tweet_id),
+        #             CONSTRAINT user_id_fk FOREIGN KEY(user_id) REFERENCES users(id),
+        #             CONSTRAINT tweet_id_fk FOREIGN KEY(tweet_id) REFERENCES tweets(id)
+        #         );
+        # """
+        # cursor.execute(table_retweets)
 
-        table_reply_to = """
-            CREATE TABLE IF NOT EXISTS
-                replies(
-                    tweet_id bigint not null,
-                    user_id bigint not null,
-                    username text not null,
-                    CONSTRAINT replies_pk PRIMARY KEY (user_id, tweet_id),
-                    CONSTRAINT tweet_id_fk FOREIGN KEY (tweet_id) REFERENCES tweets(id)
-                );
-        """
-        cursor.execute(table_reply_to)
+        # table_reply_to = """
+        #     CREATE TABLE IF NOT EXISTS
+        #         replies(
+        #             tweet_id bigint not null,
+        #             user_id bigint not null,
+        #             username text not null,
+        #             CONSTRAINT replies_pk PRIMARY KEY (user_id, tweet_id),
+        #             CONSTRAINT tweet_id_fk FOREIGN KEY (tweet_id) REFERENCES tweets(id)
+        #         );
+        # """
+        # cursor.execute(table_reply_to)
 
-        table_favorites =  """
-            CREATE TABLE IF NOT EXISTS
-                favorites(
-                    user_id bigint not null,
-                    tweet_id bigint not null,
-                    CONSTRAINT favorites_pk PRIMARY KEY (user_id, tweet_id),
-                    CONSTRAINT user_id_fk FOREIGN KEY (user_id) REFERENCES users(id),
-                    CONSTRAINT tweet_id_fk FOREIGN KEY (tweet_id) REFERENCES tweets(id)
-                );
-        """
-        cursor.execute(table_favorites)
+        # table_favorites =  """
+        #     CREATE TABLE IF NOT EXISTS
+        #         favorites(
+        #             user_id bigint not null,
+        #             tweet_id bigint not null,
+        #             CONSTRAINT favorites_pk PRIMARY KEY (user_id, tweet_id),
+        #             CONSTRAINT user_id_fk FOREIGN KEY (user_id) REFERENCES users(id),
+        #             CONSTRAINT tweet_id_fk FOREIGN KEY (tweet_id) REFERENCES tweets(id)
+        #         );
+        # """
+        # cursor.execute(table_favorites)
 
-        table_followers = """
-            CREATE TABLE IF NOT EXISTS
-                followers (
-                    id bigint not null,
-                    follower_id bigint not null,
-                    CONSTRAINT followers_pk PRIMARY KEY (id, follower_id),
-                    CONSTRAINT id_fk FOREIGN KEY(id) REFERENCES users(id),
-                    CONSTRAINT follower_id_fk FOREIGN KEY(follower_id) REFERENCES users(id)
-                );
-        """
-        cursor.execute(table_followers)
+        # table_followers = """
+        #     CREATE TABLE IF NOT EXISTS
+        #         followers (
+        #             id bigint not null,
+        #             follower_id bigint not null,
+        #             CONSTRAINT followers_pk PRIMARY KEY (id, follower_id),
+        #             CONSTRAINT id_fk FOREIGN KEY(id) REFERENCES users(id),
+        #             CONSTRAINT follower_id_fk FOREIGN KEY(follower_id) REFERENCES users(id)
+        #         );
+        # """
+        # cursor.execute(table_followers)
 
-        table_following = """
-            CREATE TABLE IF NOT EXISTS
-                following (
-                    id bigint not null,
-                    following_id bigint not null,
-                    CONSTRAINT following_pk PRIMARY KEY (id, following_id),
-                    CONSTRAINT id_fk FOREIGN KEY(id) REFERENCES users(id),
-                    CONSTRAINT following_id_fk FOREIGN KEY(following_id) REFERENCES users(id)
-                );
-        """
-        cursor.execute(table_following)
+        # table_following = """
+        #     CREATE TABLE IF NOT EXISTS
+        #         following (
+        #             id bigint not null,
+        #             following_id bigint not null,
+        #             CONSTRAINT following_pk PRIMARY KEY (id, following_id),
+        #             CONSTRAINT id_fk FOREIGN KEY(id) REFERENCES users(id),
+        #             CONSTRAINT following_id_fk FOREIGN KEY(following_id) REFERENCES users(id)
+        #         );
+        # """
+        # cursor.execute(table_following)
 
-        table_followers_names = """
-            CREATE TABLE IF NOT EXISTS
-                followers_names (
-                    username text not null,
-                    time_update bigint not null,
-                    follower text not null,
-                    CONSTRAINT followers_name_user_pk PRIMARY KEY (username, follower)
-                );
-        """
-        cursor.execute(table_followers_names)
+        # table_followers_names = """
+        #     CREATE TABLE IF NOT EXISTS
+        #         followers_names (
+        #             username text not null,
+        #             time_update bigint not null,
+        #             follower text not null,
+        #             CONSTRAINT followers_name_user_pk PRIMARY KEY (username, follower)
+        #         );
+        # """
+        # cursor.execute(table_followers_names)
 
-        table_following_names = """
-            CREATE TABLE IF NOT EXISTS
-                following_names (
-                    username text not null,
-                    time_update bigint not null,
-                    follows text not null,
-                    PRIMARY KEY (username, follows)
-                );
-        """
-        cursor.execute(table_following_names)
+        # table_following_names = """
+        #     CREATE TABLE IF NOT EXISTS
+        #         following_names (
+        #             username text not null,
+        #             time_update bigint not null,
+        #             follows text not null,
+        #             PRIMARY KEY (username, follows)
+        #         );
+        # """
+        # cursor.execute(table_following_names)
         return conn
     except Exception as e:
         return str(e)
