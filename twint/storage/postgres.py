@@ -279,9 +279,14 @@ def tweets(conn, Tweet, config):
                     Tweet.translate,
                     Tweet.trans_src,
                     Tweet.trans_dest,
-                    config.PostgresAdditionalId)
+                    config.PostgresAdditionalId,
+                    "undefined",
+                    "undefined",
+                    "undefined",
+                    "undefined",
+                    "undefined",)
         print(entry)
-        cursor.execute('INSERT INTO tweets VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)', entry)
+        cursor.execute('INSERT INTO tweets VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)', entry)
 
         if config.Favorites:
             query = 'INSERT INTO favorites VALUES(?,?)'
