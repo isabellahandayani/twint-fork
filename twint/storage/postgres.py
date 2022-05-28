@@ -94,44 +94,44 @@ def init(db):
         """
         cursor.execute(table_tweets)
 
-        # table_retweets = """
-        #     CREATE TABLE IF NOT EXISTS
-        #         retweets(
-        #             user_id bigint not null,
-        #             username text not null,
-        #             tweet_id bigint not null,
-        #             retweet_id bigint not null,
-        #             retweet_date bigint,
-        #             CONSTRAINT retweets_pk PRIMARY KEY(user_id, tweet_id),
-        #             CONSTRAINT user_id_fk FOREIGN KEY(user_id) REFERENCES users(id),
-        #             CONSTRAINT tweet_id_fk FOREIGN KEY(tweet_id) REFERENCES tweets(id)
-        #         );
-        # """
-        # cursor.execute(table_retweets)
+        table_retweets = """
+            CREATE TABLE IF NOT EXISTS
+                retweets(
+                    user_id bigint not null,
+                    username text not null,
+                    tweet_id bigint not null,
+                    retweet_id bigint not null,
+                    retweet_date bigint,
+                    CONSTRAINT retweets_pk PRIMARY KEY(user_id, tweet_id),
+                    CONSTRAINT user_id_fk FOREIGN KEY(user_id) REFERENCES users(id),
+                    CONSTRAINT tweet_id_fk FOREIGN KEY(tweet_id) REFERENCES tweets(id)
+                );
+        """
+        cursor.execute(table_retweets)
 
-        # table_reply_to = """
-        #     CREATE TABLE IF NOT EXISTS
-        #         replies(
-        #             tweet_id bigint not null,
-        #             user_id bigint not null,
-        #             username text not null,
-        #             CONSTRAINT replies_pk PRIMARY KEY (user_id, tweet_id),
-        #             CONSTRAINT tweet_id_fk FOREIGN KEY (tweet_id) REFERENCES tweets(id)
-        #         );
-        # """
-        # cursor.execute(table_reply_to)
+        table_reply_to = """
+            CREATE TABLE IF NOT EXISTS
+                replies(
+                    tweet_id bigint not null,
+                    user_id bigint not null,
+                    username text not null,
+                    CONSTRAINT replies_pk PRIMARY KEY (user_id, tweet_id),
+                    CONSTRAINT tweet_id_fk FOREIGN KEY (tweet_id) REFERENCES tweets(id)
+                );
+        """
+        cursor.execute(table_reply_to)
 
-        # table_favorites =  """
-        #     CREATE TABLE IF NOT EXISTS
-        #         favorites(
-        #             user_id bigint not null,
-        #             tweet_id bigint not null,
-        #             CONSTRAINT favorites_pk PRIMARY KEY (user_id, tweet_id),
-        #             CONSTRAINT user_id_fk FOREIGN KEY (user_id) REFERENCES users(id),
-        #             CONSTRAINT tweet_id_fk FOREIGN KEY (tweet_id) REFERENCES tweets(id)
-        #         );
-        # """
-        # cursor.execute(table_favorites)
+        table_favorites =  """
+            CREATE TABLE IF NOT EXISTS
+                favorites(
+                    user_id bigint not null,
+                    tweet_id bigint not null,
+                    CONSTRAINT favorites_pk PRIMARY KEY (user_id, tweet_id),
+                    CONSTRAINT user_id_fk FOREIGN KEY (user_id) REFERENCES users(id),
+                    CONSTRAINT tweet_id_fk FOREIGN KEY (tweet_id) REFERENCES tweets(id)
+                );
+        """
+        cursor.execute(table_favorites)
 
         # table_followers = """
         #     CREATE TABLE IF NOT EXISTS
