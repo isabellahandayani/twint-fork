@@ -1,3 +1,4 @@
+import json
 import sys
 import time
 import hashlib
@@ -11,7 +12,6 @@ def ConnPostgres(database):
         conn = init(database)
         print("DONE")
         if isinstance(conn, str): # error
-            print(conn)
             sys.exit(1)
     else:
         conn = ""
@@ -73,11 +73,11 @@ def init(db):
                     screen_name text not null,
                     name text default '',
                     link text,
-                    mentions text,
-                    hashtags text,
-                    cashtags text,
-                    urls text,
-                    photos text,
+                    mentions jsonb,
+                    hashtags text array,
+                    cashtags text array,
+                    urls text array,
+                    photos text array,
                     thumbnail text,
                     quote_url text,
                     video bigint,
@@ -89,6 +89,11 @@ def init(db):
                     trans_src text default '',
                     trans_dest text default '',
                     additional_id int not null default -1,
+                    additional_attribute text default 'undefined' not null,
+                    additional_attribute2 text default 'undefined' not null,
+                    additional_attribute3 text default 'undefined' not null,
+                    additional_attribute4 text default 'undefined' not null,
+                    additional_attribute5 text default 'undefined' not null,
                     CONSTRAINT tweets_pk PRIMARY KEY (id)
                 );
         """
@@ -103,7 +108,6 @@ def init(db):
                     retweet_id bigint not null,
                     retweet_date bigint,
                     CONSTRAINT retweets_pk PRIMARY KEY(user_id, tweet_id),
-                    CONSTRAINT user_id_fk FOREIGN KEY(user_id) REFERENCES users(id),
                     CONSTRAINT tweet_id_fk FOREIGN KEY(tweet_id) REFERENCES tweets(id)
                 );
         """
@@ -127,7 +131,6 @@ def init(db):
                     user_id bigint not null,
                     tweet_id bigint not null,
                     CONSTRAINT favorites_pk PRIMARY KEY (user_id, tweet_id),
-                    CONSTRAINT user_id_fk FOREIGN KEY (user_id) REFERENCES users(id),
                     CONSTRAINT tweet_id_fk FOREIGN KEY (tweet_id) REFERENCES tweets(id)
                 );
         """
@@ -244,8 +247,8 @@ def user(conn, config, User):
 def tweets(conn, Tweet, config):
     try:
         time_ms = round(time.time()*1000)
-        print(conn)
         cursor = conn.cursor()
+        # TODO: fix mentions and reply
         entry = (Tweet.id,
                     Tweet.id_str,
                     Tweet.tweet,
@@ -264,11 +267,11 @@ def tweets(conn, Tweet, config):
                     Tweet.username,
                     Tweet.name,
                     Tweet.link,
-                    ",".join(Tweet.mentions),
-                    ",".join(Tweet.hashtags),
-                    ",".join(Tweet.cashtags),
-                    ",".join(Tweet.urls),
-                    ",".join(Tweet.photos),
+                    json.dumps(Tweet.mentions),
+                    Tweet.hashtags,
+                    Tweet.cashtags,
+                    Tweet.urls,
+                    Tweet.photos,
                     Tweet.thumbnail,
                     Tweet.quote_url,
                     Tweet.video,
@@ -285,23 +288,21 @@ def tweets(conn, Tweet, config):
                     "undefined",
                     "undefined",
                     "undefined",)
-        print(entry)
         cursor.execute('INSERT INTO tweets VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)', entry)
-
         if config.Favorites:
             query = 'INSERT INTO favorites VALUES(?,?)'
             cursor.execute(query, (config.User_id, Tweet.id))
-
         if Tweet.retweet:
             query = 'INSERT INTO retweets VALUES(?,?,?,?,?)'
             _d = datetime.timestamp(datetime.strptime(Tweet.retweet_date, "%Y-%m-%d %H:%M:%S"))
             cursor.execute(query, (int(Tweet.user_rt_id), Tweet.user_rt, Tweet.id, int(Tweet.retweet_id), _d))
-
+        
         if Tweet.reply_to:
             for reply in Tweet.reply_to:
-                query = 'INSERT INTO replies VALUES(?,?,?)'
-                cursor.execute(query, (Tweet.id, int(reply['user_id']), reply['username']))
+                query = f"INSERT INTO replies VALUES('{Tweet.id}', {int(reply['id'])}, '{reply['screen_name']}')"
+                cursor.execute(query)
 
         conn.commit()
-    except psycopg2.IntegrityError:
+    except Exception as e:
+        print(f"ERROR: {str(e)}")
         pass
