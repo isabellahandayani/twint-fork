@@ -1,7 +1,8 @@
 import twint
 
 c = twint.Config()
-c.Username = "jokowi"
+c.Search = "Anies Baswedan"
+c.Limit = 1000
 c.DatabasePostgres = {
     "host": "localhost",
     "port": 5432,
