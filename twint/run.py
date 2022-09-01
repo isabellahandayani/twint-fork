@@ -329,7 +329,11 @@ class Twint:
                 logme.debug(__name__ + ':Twint:Lookup:user_id')
                 self.config.Username = await get.Username(self.config.User_id, self.config.Bearer_token,
                                                           self.config.Guest_token)
-            await get.User(self.config.Username, self.config, db.Conn(self.config.Database))
+            if self.config.DatabasePostgres:
+                logme.error("ASDASDASDASDASD")
+                await get.User(self.config.Username, self.config, postgres.ConnPostgres(self.config.DatabasePostgres))
+            else:
+                await get.User(self.config.Username, self.config, db.Conn(self.config.Database))
 
         except Exception as e:
             logme.exception(__name__ + ':Twint:Lookup:Unexpected exception occurred.')

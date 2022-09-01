@@ -3,7 +3,7 @@ import sys
 import time
 import hashlib
 import psycopg2
-
+import logging as logme
 from datetime import datetime
 
 def ConnPostgres(database):
@@ -14,6 +14,7 @@ def ConnPostgres(database):
         if isinstance(conn, str): # error
             sys.exit(1)
     else:
+        logme.error("FAILED CONNECTIOn")
         conn = ""
 
     return conn
@@ -24,33 +25,33 @@ def init(db):
         conn.autocommit = True
         cursor = conn.cursor()
 
-        # table_users = """
-        #     CREATE TABLE IF NOT EXISTS
-        #         users(
-        #             id bigint not null UNIQUE,
-        #             id_str text not null,
-        #             name text,
-        #             username text not null,
-        #             bio text,
-        #             location text,
-        #             url text,
-        #             join_date text not null,
-        #             join_time text not null,
-        #             tweets bigint,
-        #             following bigint,
-        #             followers bigint,
-        #             likes bigint,
-        #             media bigint,
-        #             private bigint not null,
-        #             verified bigint not null,
-        #             profile_image_url text not null,
-        #             background_image text,
-        #             hex_dig  text not null,
-        #             time_update bigint not null,
-        #             CONSTRAINT users_pk PRIMARY KEY (id, hex_dig)
-        #         );
-        #     """
-        # cursor.execute(table_users)
+        table_users = """
+            CREATE TABLE IF NOT EXISTS
+                twitter_users(
+                    id bigint not null UNIQUE,
+                    id_str text not null,
+                    name text,
+                    username text not null,
+                    bio text,
+                    location text,
+                    url text,
+                    join_date text not null,
+                    join_time text not null,
+                    tweets bigint,
+                    following bigint,
+                    followers bigint,
+                    likes bigint,
+                    media bigint,
+                    private bool not null,
+                    verified bool not null,
+                    profile_image_url text not null,
+                    background_image text,
+                    hex_dig text not null,
+                    time_update bigint not null,
+                    CONSTRAINT twitter_users_pk PRIMARY KEY (id, hex_dig)
+                );
+            """
+        cursor.execute(table_users)
 
         table_tweets = """
             CREATE TABLE IF NOT EXISTS
@@ -215,13 +216,17 @@ def follow(conn, Username, Followers, User):
 
 def get_hash_id(conn, id):
     cursor = conn.cursor()
-    cursor.execute('SELECT hex_dig FROM users WHERE id = ? LIMIT 1', (id,))
+    logme.error("ERRORROROROROR" + str(id))
+    id = int(id)
+    logme.error(type(id))
+    cursor.execute(f"SELECT hex_dig FROM twitter_users WHERE id = {id} LIMIT 1")
     resultset = cursor.fetchall()
     return resultset[0][0] if resultset else -1
 
 def user(conn, config, User):
     try:
         time_ms = round(time.time()*1000)
+        logme.error(__name__ + ':USERUSER'+ str(conn))
         cursor = conn.cursor()
         user = [int(User.id), User.id, User.name, User.username, User.bio, User.location, User.url,User.join_date, User.join_time, User.tweets, User.following, User.followers, User.likes, User.media_count, User.is_private, User.is_verified, User.avatar, User.background_image]
 
@@ -230,14 +235,14 @@ def user(conn, config, User):
         old_hash = get_hash_id(conn, User.id)
 
         if old_hash == -1 or old_hash != hex_dig:
-            query = f"INSERT INTO users VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+            query = 'INSERT INTO twitter_users VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
             cursor.execute(query, entry)
         else:
             pass
 
         if config.Followers or config.Following:
             table = uTable(config.Followers)
-            query = f"INSERT INTO {table} VALUES(?,?)"
+            query = 'INSERT INTO {table} VALUES(%s,%s)'
             cursor.execute(query, (config.User_id, int(User.id)))
 
         conn.commit()

@@ -1,16 +1,17 @@
 import twint
 
-c = twint.Config()
-c.Search = "Anies Baswedan"
-c.Limit = 1000
-c.DatabasePostgres = {
+config = twint.Config()
+config.Username = "CNNIndonesia"
+config.Hide_output = True
+config.Store_object = True
+
+
+config.DatabasePostgres = {
     "host": "localhost",
     "port": 5432,
     "user":"postgres",
     "password":"postgres",
-    "database":"twint"
+    "database":"app"
 }
-c.PostgresAdditionalId = 2
-c.Hide_output = True
-twint.run.Search(c)
-print("ASDASDASD")
+config.Hide_output = True
+twint.run.Lookup(config)
