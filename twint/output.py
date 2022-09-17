@@ -187,8 +187,6 @@ async def Users(u, config, conn):
         db.user(conn, config, user)
 
     if config.DatabasePostgres:
-        logme.error("AAAAAAAAAAA")
-        logme.error(__name__ + ':User:DatabasePostgres')
         postgres.user(conn, config, user)
 
     if config.Elasticsearch:

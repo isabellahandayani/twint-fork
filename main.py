@@ -1,7 +1,7 @@
 import twint
 
 config = twint.Config()
-config.Username = "CNNIndonesia"
+config.Username = "ftrarviana"
 config.Hide_output = True
 config.Store_object = True
 

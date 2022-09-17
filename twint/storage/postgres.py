@@ -27,7 +27,7 @@ def init(db):
 
         table_users = """
             CREATE TABLE IF NOT EXISTS
-                twitter_users(
+                twitterusers(
                     id bigint not null UNIQUE,
                     id_str text not null,
                     name text,
@@ -48,7 +48,7 @@ def init(db):
                     background_image text,
                     hex_dig text not null,
                     time_update bigint not null,
-                    CONSTRAINT twitter_users_pk PRIMARY KEY (id, hex_dig)
+                    CONSTRAINT twitterusers_pk PRIMARY KEY (id, hex_dig)
                 );
             """
         cursor.execute(table_users)
@@ -216,17 +216,15 @@ def follow(conn, Username, Followers, User):
 
 def get_hash_id(conn, id):
     cursor = conn.cursor()
-    logme.error("ERRORROROROROR" + str(id))
     id = int(id)
-    logme.error(type(id))
-    cursor.execute(f"SELECT hex_dig FROM twitter_users WHERE id = {id} LIMIT 1")
+    cursor.execute(f"SELECT hex_dig FROM twitterusers WHERE id = {id} LIMIT 1")
     resultset = cursor.fetchall()
     return resultset[0][0] if resultset else -1
 
 def user(conn, config, User):
     try:
         time_ms = round(time.time()*1000)
-        logme.error(__name__ + ':USERUSER'+ str(conn))
+        logme.debug(__name__ + ':Postgres:user:'+ str(conn))
         cursor = conn.cursor()
         user = [int(User.id), User.id, User.name, User.username, User.bio, User.location, User.url,User.join_date, User.join_time, User.tweets, User.following, User.followers, User.likes, User.media_count, User.is_private, User.is_verified, User.avatar, User.background_image]
 
@@ -235,7 +233,7 @@ def user(conn, config, User):
         old_hash = get_hash_id(conn, User.id)
 
         if old_hash == -1 or old_hash != hex_dig:
-            query = 'INSERT INTO twitter_users VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+            query = 'INSERT INTO twitterusers VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
             cursor.execute(query, entry)
         else:
             pass
