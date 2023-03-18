@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
+
 @dataclass
 class Config:
     Username: Optional[str] = None
@@ -29,7 +30,8 @@ class Config:
     Stats: bool = False
     Database: object = None
     DatabasePostgres: object = None
-    PostgresAdditionalId: int = -1
+    project_id: int = -1
+    crawler_id: int = -1
     To: str = None
     All = None
     Debug: bool = False
