@@ -104,11 +104,11 @@ def get_connector(config):
     return _connector
 
 
-def get_headers(session, **kwargs) -> dict:
+def get_headers(session) -> dict:
     """
     Get the headers required for authenticated requests
     """
-    headers = kwargs | {
+    headers = {
         "authorization": "Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs=1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA",
         "cookie": "; ".join(f"{k}={v}" for k, v in session.cookies.items()),
         "referer": "https://twitter.com/",
