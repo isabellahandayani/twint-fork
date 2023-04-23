@@ -66,10 +66,16 @@ class Scrapper:
         config.Search = f"{keywords} {keywords_exact} {keywords_or} {keywords_stop} {hashtags} min_replies:{min_replies} min_faves:{min_likes} min_retweets:{min_retweets} {since} {until} lang:id"
         config.Limit = limit
         config.Hide_output = True
-        config.Store_object = True
-        config.Account_email = ""
-        config.Account_username = ""
-        config.Account_password = ""
+        config.Account_email = "hajimeong11@gmail.com"
+        config.Account_username = "MeongHaji"
+        config.Account_password = "123456xX"
+        config.DatabasePostgres = {
+            "host": "localhost",
+            "port": 5433,
+            "user": "postgres",
+            "password": "123456xX",
+            "database": "app",
+        }
 
         res = []
 
