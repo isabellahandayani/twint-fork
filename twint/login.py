@@ -34,7 +34,9 @@ def find_key(obj: any, key: str) -> list:
     return helper(obj, key, [])
 
 
-def update_token(session: Client, key: str, url: str, **kwargs) -> Client:
+def update_token(
+    session: Client, key: str, url: str, hide_output: bool = True, **kwargs
+) -> Client:
     caller_name = sys._getframe(1).f_code.co_name
 
     try:
@@ -65,7 +67,9 @@ def update_token(session: Client, key: str, url: str, **kwargs) -> Client:
         session.cookies.set(
             "flow_errors", "true"
         )  # signal that an error occurred somewhere in the flow
-        print(f"[error] failed to update token at {caller_name}\n{e}")
+        not hide_output and print(
+            f"[error] failed to update token at {caller_name}\n{e}"
+        )
     return session
 
 
