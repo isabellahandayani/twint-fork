@@ -89,3 +89,8 @@ class Config:
     Bearer_token: str = None
     Guest_token: str = None
     deleted: list = None
+
+    # For login purposes
+    Account_username: str = None
+    Account_email: str = None
+    Account_password: str = None

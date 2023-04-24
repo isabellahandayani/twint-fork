@@ -48,14 +48,11 @@ def init(db):
                     verified bool not null,
                     profile_image_url text not null,
                     background_image text,
-                    hex_dig text not null,
-                    time_update bigint not null,
                     crawler_id bigint not null,
                     CONSTRAINT twitterusers_pk PRIMARY KEY (id, hex_dig)
                 );
             """
         cursor.execute(table_users)
-
         table_tweets = """
             CREATE TABLE IF NOT EXISTS
                 tweets (
@@ -64,7 +61,6 @@ def init(db):
                     tweet text default '',
                     language text default '',
                     conversation_id text not null,
-                    created_at text not null,
                     date text not null,
                     time text not null,
                     timezone text not null,
@@ -88,7 +84,6 @@ def init(db):
                     geo text,
                     near text,
                     source text,
-                    time_update bigint not null,
                     translate text default '',
                     trans_src text default '',
                     trans_dest text default '',
@@ -96,8 +91,6 @@ def init(db):
                     additional_attribute text default 'undefined' not null,
                     additional_attribute2 text default 'undefined' not null,
                     additional_attribute3 text default 'undefined' not null,
-                    additional_attribute4 text default 'undefined' not null,
-                    additional_attribute5 text default 'undefined' not null,
                     additional_attribute6 bigint default -1 not null,
                     CONSTRAINT tweets_pk PRIMARY KEY (id)
                 );
@@ -229,14 +222,14 @@ def follow(conn, Username, Followers, User):
 def get_hash_id(conn, id):
     cursor = conn.cursor()
     id = int(id)
-    cursor.execute(f"SELECT hex_dig FROM twitterusers WHERE id = {id} LIMIT 1")
+    cursor.execute(f"SELECT * FROM twitterusers WHERE id = {id} LIMIT 1")
     resultset = cursor.fetchall()
-    return resultset[0][0] if resultset else -1
+    hex_dig = hashlib.sha256(",".join(str(v) for v in resultset).encode()).hexdigest()
+    return hex_dig if resultset else -1
 
 
 def user(conn, config, User):
     try:
-        time_ms = round(time.time() * 1000)
         logme.debug(__name__ + ":Postgres:user:" + str(conn))
         cursor = conn.cursor()
         user = [
@@ -265,8 +258,7 @@ def user(conn, config, User):
         old_hash = get_hash_id(conn, User.id)
 
         if old_hash == -1 or old_hash != hex_dig:
-            user = user[:18] + [hex_dig, time_ms] + user[18:]
-            query = "INSERT INTO twitterusers VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+            query = "INSERT INTO twitterusers VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
             cursor.execute(query, user)
         else:
             pass
@@ -283,7 +275,6 @@ def user(conn, config, User):
 
 def tweets(conn, Tweet, config):
     try:
-        time_ms = round(time.time() * 1000)
         cursor = conn.cursor()
         # TODO: fix mentions and reply
         entry = (
@@ -315,7 +306,6 @@ def tweets(conn, Tweet, config):
             Tweet.geo,
             Tweet.near,
             Tweet.source,
-            time_ms,
             Tweet.translate,
             Tweet.trans_src,
             Tweet.trans_dest,
@@ -323,12 +313,10 @@ def tweets(conn, Tweet, config):
             "undefined",
             "undefined",
             "undefined",
-            "undefined",
-            "undefined",
             config.crawler_id,
         )
         cursor.execute(
-            "INSERT INTO tweets VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+            "INSERT INTO tweets VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
             entry,
         )
         if config.Favorites:
